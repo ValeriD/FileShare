@@ -3,9 +3,11 @@ package org.elsysbg.fileshare.services.account_verify;
 import org.elsysbg.fileshare.dao.verify_account.VerifyAccountDao;
 import org.elsysbg.fileshare.models.VerifyAccount;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class VerifyAccountServiceImpl implements VerifyAccountService {
 
     @Autowired

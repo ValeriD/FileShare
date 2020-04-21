@@ -1,6 +1,7 @@
 package org.elsysbg.fileshare.services.role;
 
 import org.elsysbg.fileshare.models.Role;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 

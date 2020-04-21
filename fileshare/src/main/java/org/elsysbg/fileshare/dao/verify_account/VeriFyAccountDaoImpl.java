@@ -3,11 +3,14 @@ package org.elsysbg.fileshare.dao.verify_account;
 import org.elsysbg.fileshare.models.VerifyAccount;
 import org.elsysbg.fileshare.repositories.VerifyAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
+@Repository
 public class VeriFyAccountDaoImpl implements VerifyAccountDao {
 
     @Autowired

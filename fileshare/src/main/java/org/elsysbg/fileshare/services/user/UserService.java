@@ -3,8 +3,10 @@ package org.elsysbg.fileshare.services.user;
 import org.elsysbg.fileshare.dto.UserCreateDto;
 import org.elsysbg.fileshare.dto.VerifyCodeDto;
 import org.elsysbg.fileshare.models.User;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 
 public interface UserService  {
     public User createMember(UserCreateDto accountDto) throws Exception;

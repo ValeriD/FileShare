@@ -33,7 +33,7 @@ public class User implements Serializable {
     private Set<Role> roles;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<VerifyAccount> verifyAccounts;
 
     public Long getId() {
