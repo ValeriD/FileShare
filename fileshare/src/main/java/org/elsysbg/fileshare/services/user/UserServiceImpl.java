@@ -1,7 +1,6 @@
 package org.elsysbg.fileshare.services.user;
 
-import org.elsysbg.fileshare.dao.user.UserDao;
-import org.elsysbg.fileshare.dao.verify_account.VerifyAccountDao;
+
 import org.elsysbg.fileshare.dto.UserCreateDto;
 import org.elsysbg.fileshare.dto.VerifyCodeDto;
 import org.elsysbg.fileshare.mail.Mail;
@@ -9,12 +8,13 @@ import org.elsysbg.fileshare.mail.MailService;
 import org.elsysbg.fileshare.models.Role;
 import org.elsysbg.fileshare.models.User;
 import org.elsysbg.fileshare.models.VerifyAccount;
+import org.elsysbg.fileshare.repositories.UserRepository;
+import org.elsysbg.fileshare.repositories.VerifyAccountRepository;
 import org.elsysbg.fileshare.services.role.RoleService;
 import org.elsysbg.fileshare.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +25,13 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Autowired
     private RoleService roleService;
 
     @Autowired
-    private VerifyAccountDao verifyAccountDao;
+    private VerifyAccountRepository verifyAccountRepository;
 
     @Autowired
     private MailService mailService;
@@ -49,11 +49,11 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
-        user.setPassword(password);
-        user.setActive(false);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEnabled(false);
 
-        if(roleService.findById(2l).isPresent()) {
-            Role role = roleService.findById(2l).get();
+        if(roleService.findById((long)1).isPresent()) {
+            Role role = roleService.findById((long)1).get();
             user.addRole(role);
         }
         String token = RandomUtil.generateRandomStringNumber(6).toUpperCase();
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         verifyAccount.setCreatedDate(LocalDateTime.now());
         verifyAccount.setExpiredDataToken(5);
         verifyAccount.setToken(token);
-        verifyAccountDao.create(verifyAccount);
+        verifyAccountRepository.save(verifyAccount);
 
         Map<String, Object> maps = new HashMap<>();
         maps.put("user", user);
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         mail.setModel(maps);
         mailService.sendEmail(mail);
 
-        return userDao.create(user);
+        return userRepository.save(user);
     }
 
     @Override
@@ -91,41 +91,44 @@ public class UserServiceImpl implements UserService {
         account.setUsername(username);
         account.setPassword(passwordEncoder.encode(password));
 
-        if(roleService.findById(2l).isPresent()) {
-            Role role = roleService.findById(2l).get();
+        if(roleService.findById((long)2).isPresent()) {
+            Role role = roleService.findById((long)2).get();
             account.addRole(role);
         }
 
-        return userDao.create(account);
+        return userRepository.save(account);
     }
 
     @Override
     public Optional<User> findByUsernameOrEmail(String username, String email) {
-        return userDao.findByUsernameOrEmail(username,email);
+        return userRepository.findByUsernameOrEmail(username,email);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userDao.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userDao.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return userDao.findById(id);
+        return userRepository.findById(id);
     }
 
     @Override
     public void verifyCode(VerifyCodeDto verifyCodeDto) {
         String token = verifyCodeDto.getToken();
 
-        VerifyAccount verifyAccount = verifyAccountDao.findByToken(token).get();
+        VerifyAccount verifyAccount = verifyAccountRepository.findByToken(token).get();
         User user = verifyAccount.getUser();
-        user.setActive(true);
-        userDao.update(user);
+        user.setEnabled(true);
+        userRepository.save(user);
     }
+
+
+
 }

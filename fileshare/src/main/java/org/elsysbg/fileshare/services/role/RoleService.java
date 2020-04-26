@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public interface RoleService {
     Optional<Role> findById(Long id);
     Role create(Role role);

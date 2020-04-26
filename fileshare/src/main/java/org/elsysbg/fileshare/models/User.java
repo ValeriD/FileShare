@@ -23,11 +23,11 @@ public class User implements Serializable {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "is_active")
-    private boolean active;
+    @Column(name = "enabled")
+    private boolean enabled;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = {
             @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
@@ -68,12 +68,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Set<Role> getRoles() {
@@ -93,7 +93,7 @@ public class User implements Serializable {
     }
 
     public Set<Role> addRole(Role role){
-        if(role==null) {
+        if(roles==null) {
             roles = new HashSet<Role>();
         }
         roles.add(role);

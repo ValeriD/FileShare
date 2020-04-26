@@ -1,6 +1,8 @@
 package org.elsysbg.fileshare.controllers;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elsysbg.fileshare.dto.UserCreateDto;
 import org.elsysbg.fileshare.dto.VerifyCodeDto;
 import org.elsysbg.fileshare.models.User;
@@ -11,14 +13,33 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
-public class UserController {
+@RequestMapping(value = "/")
+public class LoginController {
 
     @Autowired
-    private UserService userService;
+    UserService userService;
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(Model model, HttpServletRequest request){
+        return "index";
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
+        return "login";
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public String logout() {
+        return "home";
+    }
 
     @GetMapping("sign-up")
     public String signUp(UserCreateDto userCreateDto, Model model) {
@@ -31,6 +52,7 @@ public class UserController {
         if (result.hasErrors()) {
             return "sign-up";
         }
+        System.out.println("No errors");
 
         User user = userService.createMember(accountCreateDto);
         accountCreateDto.setId(user.getId());
@@ -45,10 +67,16 @@ public class UserController {
 
     @PostMapping("verify-code")
     public String verifyCodeAction(Model model, @Valid VerifyCodeDto verifyCodeDto, BindingResult result) {
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             return "verify-code";
         }
         userService.verifyCode(verifyCodeDto);
         return "redirect:/login";
     }
+    @GetMapping("/user/home")
+    public String home(Model model){
+        return "hello";
+    }
+
+
 }
