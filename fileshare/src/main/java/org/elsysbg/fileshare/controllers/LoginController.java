@@ -1,8 +1,6 @@
 package org.elsysbg.fileshare.controllers;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elsysbg.fileshare.dto.UserCreateDto;
 import org.elsysbg.fileshare.dto.VerifyCodeDto;
 import org.elsysbg.fileshare.models.User;
@@ -31,14 +29,14 @@ public class LoginController {
         return "index";
     }
 
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String successfulLogin(Model model, HttpServletRequest request){
+        return "home";
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login() {
         return "login";
-    }
-
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public String logout() {
-        return "home";
     }
 
     @GetMapping("sign-up")
@@ -73,10 +71,7 @@ public class LoginController {
         userService.verifyCode(verifyCodeDto);
         return "redirect:/login";
     }
-    @GetMapping("/user/home")
-    public String home(Model model){
-        return "hello";
-    }
+
 
 
 }

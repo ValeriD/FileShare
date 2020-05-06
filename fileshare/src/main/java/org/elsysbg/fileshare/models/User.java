@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +37,10 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<VerifyAccount> verifyAccounts;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "files", cascade = CascadeType.ALL)
+    private List<File> files;
 
     public Long getId() {
         return id;
@@ -92,11 +98,27 @@ public class User implements Serializable {
         this.verifyAccounts = verifyAccounts;
     }
 
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<File> files) {
+        this.files = files;
+    }
+
     public Set<Role> addRole(Role role){
         if(roles==null) {
             roles = new HashSet<Role>();
         }
         roles.add(role);
         return roles;
+    }
+
+    public List<File> addFile(File file){
+        if(files==null){
+            files = new ArrayList<File>();
+        }
+        files.add(file);
+        return files;
     }
 }

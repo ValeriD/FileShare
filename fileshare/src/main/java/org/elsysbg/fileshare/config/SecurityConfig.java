@@ -1,6 +1,5 @@
 package org.elsysbg.fileshare.config;
 
-import org.elsysbg.fileshare.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @Configuration
@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/sign-up","/verify-code").permitAll()
+                .antMatchers("/", "/sign-up","/verify-code").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -43,8 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout()
-                .permitAll()
-                .disable().csrf();
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/");
     }
 
     @Bean
