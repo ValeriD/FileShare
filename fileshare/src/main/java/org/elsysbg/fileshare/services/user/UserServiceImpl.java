@@ -5,11 +5,13 @@ import org.elsysbg.fileshare.dto.UserCreateDto;
 import org.elsysbg.fileshare.dto.VerifyCodeDto;
 import org.elsysbg.fileshare.mail.Mail;
 import org.elsysbg.fileshare.mail.MailService;
+import org.elsysbg.fileshare.models.File;
 import org.elsysbg.fileshare.models.Role;
 import org.elsysbg.fileshare.models.User;
 import org.elsysbg.fileshare.models.VerifyAccount;
 import org.elsysbg.fileshare.repositories.UserRepository;
 import org.elsysbg.fileshare.repositories.VerifyAccountRepository;
+import org.elsysbg.fileshare.services.files.FileService;
 import org.elsysbg.fileshare.services.role.RoleService;
 import org.elsysbg.fileshare.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     private VerifyAccountRepository verifyAccountRepository;
 
     @Autowired
@@ -38,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
 
 
     @Override
@@ -77,7 +83,9 @@ public class UserServiceImpl implements UserService {
         mail.setModel(maps);
         mailService.sendEmail(mail);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        fileService.saveDir(username + "_root", savedUser, null);
+        return savedUser;
     }
 
     @Override

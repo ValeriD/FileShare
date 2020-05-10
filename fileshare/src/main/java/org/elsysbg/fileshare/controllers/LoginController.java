@@ -29,7 +29,7 @@ public class LoginController {
         return "index";
     }
 
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String successfulLogin(Model model, HttpServletRequest request){
         return "home";
     }

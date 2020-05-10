@@ -2,12 +2,142 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
     <title>Hello World!</title>
 </head>
 <body>
-<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Sign Out"/>
+  <input type="hidden" id="parent_id" value="null">
+  <form th:action="@{/logout}" method="post">
+      <input type="submit" value="Sign Out"/>
+  </form>
+
+
+<div class="container">
+  <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+
+
+
+</div>
+
+<form id="file-upload-form">
+    <label for="file-upload-input">Select file to upload</label>
+    <input type="file" id="file-upload-input" name="file">
+    <button type="submit">Upload</button>
 </form>
+
+<form id="dir-upload-form">
+    <label for="folder-upload-input">Directory name</label>
+    <input type="text" id="dir-upload-input" name="Directory">
+    <button type="submit">Upload</button>
+</form>
+
+
+
+<script>
+$(document).ready(function () {
+  var parentId = $("#parent_id").val();
+  getFiles(parentId);
+
+  $("#file-upload-form").on("submit", function (e) {
+
+      // cancel the default behavior
+      e.preventDefault();
+      var data = new FormData(this);
+
+
+
+      uploadFile(data, parentId);
+  });
+  $("#dir-upload-form").on("submit", function (e) {
+      e.preventDefault();
+      var name = $("#dir-upload-input").val();
+
+      console.log(name);
+      uploadFolder(name, parentId);
+
+  });
+
+
+});
+
+function uploadFile(data, parentId){
+  $.ajax({
+      url: "/api/upload",
+      type: "POST",
+      data: data,
+      enctype: 'multipart/form-data',
+      processData: false,
+      contentType: false,
+      cache: false,
+      success: function (fileId) {
+          console.log(fileId);
+          $("#file-upload-form")[0].reset();
+          addParent(fileId, parentId);
+      },
+      error: function (err) {
+          console.error(err);
+      }
+  });
+}
+
+function addParent(fileId, parentId){
+  $.ajax({
+    url:"/api/addParent",
+    type:"POST",
+    data:{
+      fileId: parseInt(fileId),
+      parentId:parseInt(parentId)
+    },
+    success: function (res) {
+      alert(res);
+    },
+    error: function(err){
+      alert(err);
+    }
+  });
+}
+
+function uploadFolder(name, parentId){
+  $.ajax({
+      url: "/api/uploadFolder",
+      type: "POST",
+      data:{
+        name: name,
+        parentId: parseInt(parentId)
+      },
+      success: function(res){
+          $("#folder-upload-form")[0].reset();
+        alert(res);
+      },
+      error: function(err){
+        alert(err);
+      }
+
+  });
+
+}
+
+function getFiles(parentId){
+  $.ajax({
+    url: "/api/getFiles",
+    type: "GET",
+    data:{
+      parentId: parseInt(parentId)
+    },
+    success: function(res){
+       $("#parent_id").val(parentId);
+       console.log(res);
+
+    },
+    error: function(err){
+
+    }
+  });
+}
+
+
+
+</script>
 </body>
 </html>

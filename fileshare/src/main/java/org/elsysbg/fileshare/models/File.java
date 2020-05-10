@@ -5,31 +5,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "files")
 public class File {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", length = 100, unique = true)
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(name = "file_type", length = 100, unique = true)
+    @Column(name = "file_type", length = 100)
     private String fileType;
 
     @Lob
     private byte[] data;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable=false)
     private User belongsTo;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<File> files;
+    private Set<File> files;
 
     @JsonIgnore
     @ManyToOne
@@ -76,11 +77,11 @@ public class File {
         this.belongsTo = belongsTo;
     }
 
-    public List<File> getFiles() {
+    public Set<File> getFiles() {
         return files;
     }
 
-    public void setFiles(List<File> files) {
+    public void setFiles(Set<File> files) {
         this.files = files;
     }
 

@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -38,14 +41,7 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public File store(MultipartFile multipartFile, User user, Long parent) throws IOException {
-        File file = new File();
-        if(multipartFile.getContentType().equals("dir")) {
-            file = this.saveDir(multipartFile,user, parent, file);
-        }
-        else{
-            file = this.saveFile(multipartFile, user, parent, file);
-        }
-        return fileRepository.save(file);
+        return null;
     }
 
     @Override
@@ -71,13 +67,50 @@ public class FileServiceImpl implements FileService{
         }
         return dir;
     }
+    @Override
+   public Long saveFile(MultipartFile file, User user) throws IOException {
+        File uploadFile = new File();
+        uploadFile.setName(file.getOriginalFilename());
+        uploadFile.setBelongsTo(user);
+        uploadFile.setData(file.getBytes());
+        uploadFile.setFileType(file.getContentType());
+        File uploadedFile = fileRepository.save(uploadFile);
 
-    private File saveFile(MultipartFile multipartFile, User user, Long parent, File file) throws IOException {
-        file.setName(multipartFile.getName());
-        file.setFileType("file");
-        file.setData(multipartFile.getBytes());
-        file.setParent(fileRepository.findById(parent).get());
-        file.setBelongsTo(user);
-        return file;
+        return uploadedFile.getId();
+    }
+
+    @Override
+    public Long saveDir(String name, User user, Long parentId) {
+        File dir = new File();
+        dir.setName(name);
+        dir.setFileType("dir");
+        dir.setBelongsTo(user);
+        dir.setParent(fileRepository.findById(parentId).get());
+        File savedDir = fileRepository.save(dir);
+        return savedDir.getId();
+    }
+
+    @Override
+    public Set<File> getFiles(User user, String parentId) {
+        File directory;
+        if(parentId.equals("NaN")){
+
+            directory = fileRepository.findByBelongsToAndParent(user,null).get();
+        }else{
+            directory = fileRepository.findById(Long.valueOf(parentId)).get();
+        }
+        return directory.getFiles();
+    }
+
+
+    @Override
+    public boolean addParent(Long fileId, Long parentId) {
+        if(fileRepository.findById(fileId).isPresent() && fileRepository.findById(parentId).isPresent()){
+            File file = fileRepository.findById(fileId).get();
+            file.setParent(fileRepository.findById(parentId).get());
+            fileRepository.save(file);
+            return true;
+        }
+        return false;
     }
 }

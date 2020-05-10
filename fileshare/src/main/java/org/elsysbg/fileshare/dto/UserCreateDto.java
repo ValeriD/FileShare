@@ -1,18 +1,13 @@
 package org.elsysbg.fileshare.dto;
 
-//@ValidRepeatPassword
+
 public class UserCreateDto {
     private Long id;
 
-//    @ValidUsername
-//    @ValidCreateUsername
     private String username;
 
-//    @ValidEmail
-//    @ValidCreateEmail
     private String email;
 
-    //  @ValidPassword
     private String password;
 
     private String repeatPassword;

@@ -39,8 +39,8 @@ public class User implements Serializable {
     private Set<VerifyAccount> verifyAccounts;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "files", cascade = CascadeType.ALL)
-    private List<File> files;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongsTo", cascade = CascadeType.ALL)
+    private Set<File> files;
 
     public Long getId() {
         return id;
@@ -98,11 +98,11 @@ public class User implements Serializable {
         this.verifyAccounts = verifyAccounts;
     }
 
-    public List<File> getFiles() {
+    public Set<File> getFiles() {
         return files;
     }
 
-    public void setFiles(List<File> files) {
+    public void setFiles(Set<File> files) {
         this.files = files;
     }
 
@@ -114,9 +114,9 @@ public class User implements Serializable {
         return roles;
     }
 
-    public List<File> addFile(File file){
+    public Set<File> addFile(File file){
         if(files==null){
-            files = new ArrayList<File>();
+            files = new HashSet<>();
         }
         files.add(file);
         return files;
