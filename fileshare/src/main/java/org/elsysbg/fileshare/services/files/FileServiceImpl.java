@@ -1,5 +1,6 @@
 package org.elsysbg.fileshare.services.files;
 
+import org.elsysbg.fileshare.dto.FileDto;
 import org.elsysbg.fileshare.models.File;
 import org.elsysbg.fileshare.models.User;
 import org.elsysbg.fileshare.repositories.FileRepository;
@@ -8,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -39,34 +37,26 @@ public class FileServiceImpl implements FileService{
         return fileRepository.findByBelongsTo(user);
     }
 
-    @Override
-    public File store(MultipartFile multipartFile, User user, Long parent) throws IOException {
-        return null;
-    }
 
     @Override
-    public File rename(Long id, String name) {
-        File file = fileRepository.findById(id).get();
+    public File rename(String id, String name) {
+        File file = fileRepository.findById(Long.valueOf(id)).get();
         file.setName(name);
         return fileRepository.save(file);
     }
 
     @Override
-    public void delete(Long id) {
-        fileRepository.deleteById(id);
+    public void delete(String id) {
+        fileRepository.deleteById(Long.valueOf(id));
     }
 
-    private File saveDir(MultipartFile multipartFile, User user, Long parent, File dir){
-        dir.setBelongsTo(user);
-        dir.setFileType("dir");
-        dir.setName(multipartFile.getName());
-        if(parent==0){
-            dir.setParent(null);
-        }else {
-            dir.setParent(fileRepository.findById(parent).get());
-        }
-        return dir;
+    @Override
+    public void moveFile(String id, String folder) {
+        File file = findById(Long.valueOf(id)).get();
+        file.setParent(fileRepository.findByName(folder).get());
+        fileRepository.save(file);
     }
+
     @Override
    public Long saveFile(MultipartFile file, User user) throws IOException {
         File uploadFile = new File();
@@ -91,7 +81,7 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public Set<File> getFiles(User user, String parentId) {
+    public FileDto getFiles(User user, String parentId) {
         File directory;
         if(parentId.equals("NaN")){
 
@@ -99,7 +89,14 @@ public class FileServiceImpl implements FileService{
         }else{
             directory = fileRepository.findById(Long.valueOf(parentId)).get();
         }
-        return directory.getFiles();
+
+        if(directory.getFileType().equals("dir")) {
+            FileDto fileDto = new FileDto();
+            fileDto.setParent(directory);
+            fileDto.setFiles(directory.getFiles());
+            return fileDto;
+        }
+        return null;
     }
 
 
