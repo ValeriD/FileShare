@@ -14,4 +14,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
     Optional<File> findByParent(File file);
     Optional<File> findByBelongsTo(User user);
     Optional<File> findByBelongsToAndParent(User user, File file);
+    Optional<File> findByNameAndBelongsTo(String name, User user);
+    Optional<File> findByIdAndBelongsTo(Long id, User user);
 }

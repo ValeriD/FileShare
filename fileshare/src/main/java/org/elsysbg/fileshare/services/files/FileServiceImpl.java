@@ -47,13 +47,13 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public void delete(String id) {
-        fileRepository.deleteById(Long.valueOf(id));
+        System.out.println(id);
     }
 
     @Override
-    public void moveFile(String id, String folder) {
+    public void moveFile(String id, String folder, User user) {
         File file = findById(Long.valueOf(id)).get();
-        file.setParent(fileRepository.findByName(folder).get());
+        file.setParent(fileRepository.findByNameAndBelongsTo(folder,user).get());
         fileRepository.save(file);
     }
 
@@ -75,7 +75,11 @@ public class FileServiceImpl implements FileService{
         dir.setName(name);
         dir.setFileType("dir");
         dir.setBelongsTo(user);
-        dir.setParent(fileRepository.findById(parentId).get());
+        if(parentId==null){
+            dir.setParent(null);
+        }else {
+            dir.setParent(fileRepository.findById(parentId).get());
+        }
         File savedDir = fileRepository.save(dir);
         return savedDir.getId();
     }
@@ -84,10 +88,9 @@ public class FileServiceImpl implements FileService{
     public FileDto getFiles(User user, String parentId) {
         File directory;
         if(parentId.equals("NaN")){
-
             directory = fileRepository.findByBelongsToAndParent(user,null).get();
         }else{
-            directory = fileRepository.findById(Long.valueOf(parentId)).get();
+            directory = fileRepository.findByIdAndBelongsTo(Long.valueOf(parentId), user).get();
         }
 
         if(directory.getFileType().equals("dir")) {

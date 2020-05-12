@@ -44,6 +44,7 @@ public class FileController {
           fileService.delete(fileId);
            return new ResponseEntity<String>("File not uploaded", HttpStatus.BAD_REQUEST);
        }
+       System.out.println(Long.valueOf(fileId)+ " " + Long.valueOf(parentId));
         if(!fileService.addParent(Long.valueOf(fileId), Long.valueOf(parentId))){
             return new ResponseEntity<String>("File not uploaded", HttpStatus.BAD_REQUEST);
         }
@@ -66,14 +67,20 @@ public class FileController {
         return fileService.getFiles(getCurrentUser(), parentId);
     }
 
+    @RequestMapping(value ="/moveFile", method = RequestMethod.POST)
+    public void moveFile(@RequestParam(value = "id") String id, @RequestParam(value="parentName") String parentName){
+        fileService.moveFile(id, parentName, getCurrentUser());
+    }
+
     @RequestMapping(value = "/rename", method = RequestMethod.POST)
-    public void renameFile(@RequestParam("name") String name ,@RequestParam("id") String id){
+    public void renameFile( @RequestParam("id") String id, @RequestParam("name") String name){
         fileService.rename(id,name);
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public void deleteFile(@RequestParam("id") String id) {
-            fileService.delete(id);
+
+        fileService.delete(id);
     }
 
 

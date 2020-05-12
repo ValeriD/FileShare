@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         mailService.sendEmail(mail);
 
         User savedUser = userRepository.save(user);
-        fileService.saveDir(username + "_root", savedUser, null);
+       fileService.saveDir(username + "_root", savedUser, null);
         return savedUser;
     }
 

@@ -19,7 +19,7 @@ public interface FileService {
 
     File rename(String id, String name);
     void delete(String id);
-    void moveFile(String id, String folder);
+    void moveFile(String id, String folder, User user);
     Long saveFile(MultipartFile file, User user) throws IOException;
     boolean addParent(Long fileId, Long parentId);
     Long saveDir(String name, User user, Long parentId);
