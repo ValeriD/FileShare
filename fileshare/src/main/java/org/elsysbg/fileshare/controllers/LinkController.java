@@ -2,6 +2,7 @@ package org.elsysbg.fileshare.controllers;
 
 import org.elsysbg.fileshare.models.File;
 import org.elsysbg.fileshare.services.links.LinkService;
+import org.elsysbg.fileshare.util.MediaTypeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -49,9 +50,7 @@ public class LinkController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
-
-                .contentType(MediaType.parseMediaType(file.getFileType()))
-
+                .contentType(MediaTypeUtils.getMediaTypeForFileName(file.getFileType()))
                 .contentLength(file.getData().length)
                 .body(resource);
     }
