@@ -17,44 +17,41 @@ public class FileServiceImpl implements FileService{
     @Autowired
     private FileRepository fileRepository;
 
-    @Override
-    public Optional<File> findById(Long aLong) {
-        return fileRepository.findById(aLong);
-    }
-
-    @Override
-    public Optional<File> findByName(String name) {
-        return fileRepository.findByName(name);
-    }
-
-    @Override
-    public Optional<File> findByParent(File file) {
-        return fileRepository.findByParent(file);
-    }
-
-    @Override
-    public Optional<File> findByBelongsTo(User user) {
-        return fileRepository.findByBelongsTo(user);
-    }
-
 
     @Override
     public File rename(String id, String name) {
-        File file = fileRepository.findById(Long.valueOf(id)).get();
-        file.setName(name);
-        return fileRepository.save(file);
+        if(fileRepository.findById(Long.valueOf(id)).isPresent()){
+            File file = fileRepository.findById(Long.valueOf(id)).get();
+            file.setName(name);
+            return fileRepository.save(file);
+        }
+        return null;
+
     }
 
     @Override
-    public void delete(String id) {
-        System.out.println(id);
+    public boolean delete(String id) {
+        if (fileRepository.findById(Long.valueOf(id)).isPresent()) {
+            fileRepository.deleteById(Long.valueOf(id));
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void moveFile(String id, String folder, User user) {
-        File file = findById(Long.valueOf(id)).get();
-        file.setParent(fileRepository.findByNameAndBelongsTo(folder,user).get());
-        fileRepository.save(file);
+    public boolean moveFile(String id, String folder, User user) {
+        if(fileRepository.findByNameAndBelongsTo(folder, user).isPresent()){
+            File dir = fileRepository.findByNameAndBelongsTo(folder,user).get();
+            if(dir.getFileType().equals("dir") && fileRepository.findById(Long.valueOf(id)).isPresent()){
+                File file = fileRepository.findById(Long.valueOf(id)).get();
+                file.setParent(dir);
+                fileRepository.save(file);
+                return true;
+            }
+        }
+        return false;
+
+
     }
 
     @Override
@@ -77,7 +74,11 @@ public class FileServiceImpl implements FileService{
         dir.setBelongsTo(user);
         if(parentId==null){
             dir.setParent(null);
-        }else {
+        }
+        else if(!fileRepository.findById(parentId).isPresent()){
+            return (long)0;
+        }
+        else {
             dir.setParent(fileRepository.findById(parentId).get());
         }
         File savedDir = fileRepository.save(dir);
@@ -86,26 +87,25 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public FileDto getFiles(User user, String parentId) {
-        File directory;
+        File file;
         if(parentId.equals("NaN")){
-            directory = fileRepository.findByBelongsToAndParent(user,null).get();
+            file = fileRepository.findByBelongsToAndParent(user,null).get();
         }else{
-            directory = fileRepository.findByIdAndBelongsTo(Long.valueOf(parentId), user).get();
+            file = fileRepository.findByIdAndBelongsTo(Long.valueOf(parentId), user).get();
         }
-
-        if(directory.getFileType().equals("dir")) {
-            FileDto fileDto = new FileDto();
-            fileDto.setParent(directory);
-            fileDto.setFiles(directory.getFiles());
-            return fileDto;
+        FileDto fileDto = new FileDto();
+        fileDto.setParent(file);
+        fileDto.setLinks(file.getLinks());
+        if(file.getFileType().equals("dir")) {
+            fileDto.setFiles(file.getFiles());
         }
-        return null;
+        return fileDto;
     }
 
 
     @Override
     public boolean addParent(Long fileId, Long parentId) {
-        if(fileRepository.findById(fileId).isPresent() && fileRepository.findById(parentId).isPresent()){
+        if(fileRepository.findById(fileId).isPresent() && fileRepository.findById(parentId).isPresent() && fileRepository.findById(parentId).get().getFileType().equals("dir")){
             File file = fileRepository.findById(fileId).get();
             file.setParent(fileRepository.findById(parentId).get());
             fileRepository.save(file);

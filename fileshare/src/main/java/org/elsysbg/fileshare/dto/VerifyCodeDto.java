@@ -1,7 +1,7 @@
 package org.elsysbg.fileshare.dto;
 
 public class VerifyCodeDto {
-//    @ValidVerifyCode
+
     private String token;
 
     public String getToken() {

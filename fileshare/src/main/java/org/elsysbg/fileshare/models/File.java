@@ -24,7 +24,7 @@ public class File {
     @Lob
     private byte[] data;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User belongsTo;
 
@@ -36,6 +36,10 @@ public class File {
     @ManyToOne
     @JoinColumn(name= "parent_id")
     private File parent;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "file", cascade = CascadeType.ALL)
+    Set<Link> links;
 
     public Long getId() {
         return id;
@@ -91,5 +95,13 @@ public class File {
 
     public void setParent(File parent) {
         this.parent = parent;
+    }
+
+    public Set<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(Set<Link> links) {
+        this.links = links;
     }
 }

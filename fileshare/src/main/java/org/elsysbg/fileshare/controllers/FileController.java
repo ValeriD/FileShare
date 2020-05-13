@@ -56,7 +56,7 @@ public class FileController {
         if(parentId.equals("NaN")){
             return new ResponseEntity<String>("Folder not uploaded", HttpStatus.BAD_REQUEST);
         }
-        if (fileService.saveDir(name,getCurrentUser(), Long.valueOf(parentId))==null){
+        if (fileService.saveDir(name,getCurrentUser(), Long.valueOf(parentId))==0){
             return new ResponseEntity<String>("Folder not uploaded", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<String>("Folder uploaded", HttpStatus.OK);
@@ -77,9 +77,8 @@ public class FileController {
         fileService.rename(id,name);
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteFile", method = RequestMethod.DELETE)
     public void deleteFile(@RequestParam("id") String id) {
-
         fileService.delete(id);
     }
 

@@ -31,7 +31,8 @@ public class User implements Serializable {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+            @JoinColumn(name = "user_id", referencedColumnName = "id") },
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
 
     @JsonIgnore
@@ -39,7 +40,7 @@ public class User implements Serializable {
     private Set<VerifyAccount> verifyAccounts;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongsTo", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongsTo", cascade = CascadeType.ALL)
     private Set<File> files;
 
     public Long getId() {

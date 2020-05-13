@@ -12,14 +12,10 @@ import java.util.Optional;
 
 @Service
 public interface FileService {
-    Optional<File> findById(Long aLong);
-    Optional<File> findByName(String name);
-    Optional<File> findByParent(File file);
-    Optional<File> findByBelongsTo(User user);
 
     File rename(String id, String name);
-    void delete(String id);
-    void moveFile(String id, String folder, User user);
+    boolean delete(String id);
+    boolean moveFile(String id, String folder, User user);
     Long saveFile(MultipartFile file, User user) throws IOException;
     boolean addParent(Long fileId, Long parentId);
     Long saveDir(String name, User user, Long parentId);
