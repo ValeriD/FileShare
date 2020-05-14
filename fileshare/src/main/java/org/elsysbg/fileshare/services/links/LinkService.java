@@ -1,5 +1,6 @@
 package org.elsysbg.fileshare.services.links;
 
+import org.elsysbg.fileshare.dto.FileDto;
 import org.elsysbg.fileshare.models.File;
 import org.elsysbg.fileshare.models.Link;
 import org.springframework.stereotype.Service;
@@ -10,4 +11,5 @@ public interface LinkService {
     boolean removeLink(String id);
     Link getLink(String name);
     File getFileByUrl(String name);
+    FileDto getFolderByUrl(String url);
 }

@@ -58,6 +58,8 @@ $(document).ready(function () {
   var current_folder = $("#current_folder").val();
   getFiles(current_folder);
 });
+
+
 $("#file-upload-form").on("submit", function (e) {
 
     var current_folder = $("#current_folder").val();
@@ -79,15 +81,21 @@ $("#content").on("click","a.getFiles", function(){
     getFiles(id);
     return false;
 });
+
+
 $("#content").on("click","a.delete", function(){
 
     id = $(this).parent().parent().attr("class");
     deleteFile(id);
     return false;
 });
+
+
 $("#back").on("click", function(e){
     back();
 });
+
+
 $("#content").on("click","input.updateFile", function(){
   id = $(this).parent().parent().attr("class");
   console.log(id);
@@ -102,6 +110,8 @@ $("#content").on("click","input.updateFile", function(){
     moveFile(id, name);
   }
 });
+
+
 $("#link_generation").on("click", function(e){
     var current_folder = $("#current_folder").val();
     generateLink(current_folder);
@@ -118,15 +128,12 @@ $("#links_table").on("click", "input[value='Delete']", function(){
 function hideUploadForms(){
     $("#file-upload-form").hide();
     $("#dir-upload-form").hide();
-    $("#link_generation").show();
-    $("#links_table").show();
-
 }
+
+
 function showUploadForms(){
   $("#file-upload-form").show();
   $("#dir-upload-form").show();
-  $("#link_generation").hide();
-  $("#links_table").hide();
 }
 
 function uploadFile(data, parentId){
@@ -139,7 +146,6 @@ function uploadFile(data, parentId){
       contentType: false,
       cache: false,
       success: function (fileId) {
-          console.log(fileId);
           $("#file-upload-form")[0].reset();
           current_folder = $("#current_folder").val();
           addParent(fileId, current_folder);
@@ -159,11 +165,12 @@ function addParent(fileId, parentId){
       parentId:parseInt(parentId)
     },
     success: function (res) {
+      console.log(res);
       current_folder= $("#current_folder").val();
       getFiles(current_folder);
     },
     error: function(err){
-      alert(err);
+      console.log(err);;
     }
   });
 }
@@ -177,12 +184,13 @@ function uploadFolder(name, parentId){
         parentId: parseInt(parentId)
       },
       success: function(res){
+          console.log(res);
           $("#dir-upload-form")[0].reset();
           current_folder= $("#current_folder").val();
           getFiles(current_folder);
       },
       error: function(err){
-
+        console.log(err);
       }
 
   });
@@ -200,13 +208,15 @@ function getFiles(parentId){
       console.log(res);
       $("#content").empty();
       $("#links_table").empty();
-      var parentId = $("#parent_id").val(res.parent.belongsTo.id);
+      if(res.grandparentId===null){
+         $("#parent_id").val(res.parent.id);
+      }else{
+         $("#parent_id").val(res.grandparentId.id);
+      }
       var current_folder= $("#current_folder").val(res.parent.id);
-
+      printLinks(res.links);
       if(res.files===null){
-        console.log("It is a file");
         hideUploadForms();
-        printLinks(res.links);
       }
       else{
         showUploadForms();
@@ -219,9 +229,7 @@ function getFiles(parentId){
   });
 }
 
-function printLinks(links){
-  console.log("in print Links");
-  console.log(links);
+function printLinks(links){;
   for(i=0; i<links.length;i++){
     printLink(links[i]);
   }
@@ -252,13 +260,13 @@ function renameFile(id, name){
         id: parseInt(id)
       },
       success: function(res){
-        console.log("Successfully renamed");
+        console.log(res);
         current_folder= $("#current_folder").val();
         getFiles(current_folder);
 
       },
       error: function(err){
-
+        console.log(err);
       }
 
   });
@@ -272,12 +280,12 @@ function deleteFile(id){
         id: parseInt(id)
       },
       success: function(res){
-        console.log("Successfully deleted");
+        console.log(res);
         var current_folder = $("#current_folder").val();
         getFiles(current_folder);
       },
       error: function(err){
-
+        console.log(err);
       }
 
   });
@@ -291,12 +299,12 @@ function moveFile(id, parentName){
         parentName:parentName
       },
       success: function(res){
-        console.log("Successfully moved");
+        console.log(res);
         var current_folder = $("#current_folder").val();
         getFiles(current_folder);
       },
       error: function(err){
-        alert(err);
+        console.log(err);
       }
 
   });
@@ -321,7 +329,7 @@ function generateLink(id){
         getFiles(current_folder);
       },
       error: function(err){
-        alert(err);
+        console.log(err);
       }
 
   });

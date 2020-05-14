@@ -21,9 +21,11 @@ public class File {
     @Column(name = "file_type", length = 100)
     private String fileType;
 
+    @JsonIgnore
     @Lob
     private byte[] data;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User belongsTo;

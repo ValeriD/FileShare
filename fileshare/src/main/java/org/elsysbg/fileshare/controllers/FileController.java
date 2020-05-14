@@ -68,18 +68,29 @@ public class FileController {
     }
 
     @RequestMapping(value ="/moveFile", method = RequestMethod.POST)
-    public void moveFile(@RequestParam(value = "id") String id, @RequestParam(value="parentName") String parentName){
-        fileService.moveFile(id, parentName, getCurrentUser());
+    public ResponseEntity<String> moveFile(@RequestParam(value = "id") String id, @RequestParam(value="parentName") String parentName){
+        if(fileService.moveFile(id, parentName, getCurrentUser())){
+            return new ResponseEntity<String>("File moved successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("File not moved", HttpStatus.BAD_REQUEST);
+
     }
 
     @RequestMapping(value = "/rename", method = RequestMethod.POST)
-    public void renameFile( @RequestParam("id") String id, @RequestParam("name") String name){
-        fileService.rename(id,name);
+    public ResponseEntity<String> renameFile( @RequestParam("id") String id, @RequestParam("name") String name){
+        if(fileService.rename(id,name)!=null){
+            return new ResponseEntity<String>("File renamed successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("File not renamed", HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/deleteFile", method = RequestMethod.DELETE)
-    public void deleteFile(@RequestParam("id") String id) {
-        fileService.delete(id);
+    public ResponseEntity<String> deleteFile(@RequestParam("id") String id) {
+
+        if(fileService.delete(id)){
+            return new ResponseEntity<String>("File deleted successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("File not deleted", HttpStatus.BAD_REQUEST);
     }
 
 

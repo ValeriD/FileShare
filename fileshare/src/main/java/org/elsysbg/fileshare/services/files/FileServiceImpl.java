@@ -96,6 +96,7 @@ public class FileServiceImpl implements FileService{
         FileDto fileDto = new FileDto();
         fileDto.setParent(file);
         fileDto.setLinks(file.getLinks());
+        fileDto.setGrandparentId(file.getParent());
         if(file.getFileType().equals("dir")) {
             fileDto.setFiles(file.getFiles());
         }

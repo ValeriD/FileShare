@@ -6,6 +6,9 @@ import org.elsysbg.fileshare.models.Link;
 import java.util.Set;
 
 public class FileDto {
+
+
+    private File grandparentId;
     private File parent;
     private Set<File> files;
     private Set<Link> links;
@@ -32,5 +35,12 @@ public class FileDto {
 
     public void setLinks(Set<Link> links) {
         this.links = links;
+    }
+    public File getGrandparentId() {
+        return grandparentId;
+    }
+
+    public void setGrandparentId(File grandparentId) {
+        this.grandparentId = grandparentId;
     }
 }

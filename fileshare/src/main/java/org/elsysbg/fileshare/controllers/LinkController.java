@@ -1,6 +1,8 @@
 package org.elsysbg.fileshare.controllers;
 
+import org.elsysbg.fileshare.dto.FileDto;
 import org.elsysbg.fileshare.models.File;
+import org.elsysbg.fileshare.services.files.FileService;
 import org.elsysbg.fileshare.services.links.LinkService;
 import org.elsysbg.fileshare.util.MediaTypeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class LinkController {
 
     @Autowired
     LinkService linkService;
+    @Autowired
+    FileService fileService;
 
     @RequestMapping(value = "/addLink", method = RequestMethod.POST)
     public ResponseEntity<String> addLink(@RequestParam(name = "id") String id, ServletRequest request) throws UnknownHostException {
@@ -53,6 +57,11 @@ public class LinkController {
                 .contentType(MediaTypeUtils.getMediaTypeForFileName(file.getFileType()))
                 .contentLength(file.getData().length)
                 .body(resource);
+    }
+
+    @RequestMapping(value = "/folder/*", method = RequestMethod.GET)
+    public FileDto getFolder(HttpServletRequest request){
+        return linkService.getFolderByUrl(request.getRequestURL().toString());
     }
 
 }

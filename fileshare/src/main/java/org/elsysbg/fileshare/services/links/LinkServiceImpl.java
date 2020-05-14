@@ -1,5 +1,6 @@
 package org.elsysbg.fileshare.services.links;
 
+import org.elsysbg.fileshare.dto.FileDto;
 import org.elsysbg.fileshare.models.File;
 import org.elsysbg.fileshare.models.Link;
 import org.elsysbg.fileshare.repositories.FileRepository;
@@ -10,6 +11,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
 
 
 @Service
@@ -26,7 +29,12 @@ public class LinkServiceImpl implements LinkService {
         Link link = new Link();
         if(fileRepository.findById(Long.valueOf(id)).isPresent()){
             link.setFile(fileRepository.findById(Long.valueOf(id)).get());
-            link.setLink(generateLink(url));
+            if(link.getFile().getFileType().equals("dir")){
+                link.setLink(generateLink(url, true));
+            }else{
+                link.setLink(generateLink(url, false));
+            }
+
             linkRepository.save(link);
             return true;
         }
@@ -34,8 +42,12 @@ public class LinkServiceImpl implements LinkService {
         return false;
     }
 
-    private String generateLink(String url) {
-         url += "/api/file/";
+    private String generateLink(String url, boolean isDir) {
+        if(isDir){
+            url+="/api/folder/";
+        }else{
+            url += "/api/file/";
+        }
         String token = RandomUtil.generateRandomStringNumber(10).toUpperCase();
         return url+token;
     }
@@ -64,5 +76,14 @@ public class LinkServiceImpl implements LinkService {
             return link.getFile();
         }
         return null;
+    }
+
+    @Override
+    public FileDto getFolderByUrl(String url) {
+        File file = getFileByUrl(url);
+        FileDto fileDto = new FileDto();
+        fileDto.setParent(file);
+        fileDto.setFiles(file.getFiles());
+        return fileDto;
     }
 }
