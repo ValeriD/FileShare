@@ -31,7 +31,7 @@ public class File {
     private User belongsTo;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.REMOVE)
     private Set<File> files;
 
     @JsonIgnore

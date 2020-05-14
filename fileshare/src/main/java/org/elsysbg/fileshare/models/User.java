@@ -40,7 +40,7 @@ public class User implements Serializable {
     private Set<VerifyAccount> verifyAccounts;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongsTo", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "belongsTo", cascade = CascadeType.REMOVE)
     private Set<File> files;
 
     public Long getId() {
